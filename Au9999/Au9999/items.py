@@ -13,10 +13,11 @@ class Au9999Item(scrapy.Item):
     # name = scrapy.Field()
     pass
 
-class BaiduInformationItem(scrapy.Item):
+class InformationItem(scrapy.Item):
+    url = scrapy.Field()
     title = scrapy.Field()
-    domain = scrapy.Field()
     publish_time = scrapy.Field()
+    publisher = scrapy.Field()
     crawl_time = scrapy.Field()
     content = scrapy.Field()
 
