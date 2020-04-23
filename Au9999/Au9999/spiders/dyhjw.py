@@ -4,10 +4,13 @@ from ..items import InformationItem
 from scrapy.http import Request
 import time
 
-class informationSpider(scrapy.Spider):
-    name = 'information'
+class dyhjwSpider(scrapy.Spider):
+    name = 'dyhjw'
     allowed_domains = ['www.dyhjw.com']
     start_urls = ['http://www.dyhjw.com/gold/jjsj.html']
+    custom_settings = {
+        'ITEM_PIPELINES': {'Au9999.pipelines.Au9999Pipeline': 1}
+    }
 
     def parse(self, response):
         domain = 'http://www.dyhjw.com/'
@@ -35,15 +38,14 @@ class informationSpider(scrapy.Spider):
         item['title'] = title if title else None
 
         publish_time = response.xpath("//span[@id='pushtime']/text()").extract_first()
-
-        # if u'小时前' in publish_time:
-        #     publish_time = time.strftime("%Y-%m-%d")
-        # else:
-        #     publish_time = publish_time.split(' ')[0].replace(u'年', '-').replace(u'月', '-').replace(u'日', '').strip()
+        if u'\u5c0f\u65f6\u524d' in publish_time or u'\u5206\u949f\u524d' in publish_time:
+            publish_time = time.strftime("%Y-%m-%d")
+        else:
+            publish_time = publish_time.split(' ')[0].replace(u'\u5e74', '-').replace(u'\u6708', '-').replace(u'\u65e5', '').strip()
         item['publish_time'] = publish_time if publish_time else None
 
         publisher = response.xpath("//div[@class='zrbj']/text()").extract_first()
-        # publisher = publisher.replace(u'责任编辑：').strip()
+        publisher = publisher.replace(u'\u8d23\u4efb\u7f16\u8f91\uff1a', '').strip()
         item['publisher'] = publisher if publisher else None
 
         content = ''.join(response.xpath("//div[@class='section_wrap']//text()").extract())
